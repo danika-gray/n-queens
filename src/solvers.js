@@ -52,15 +52,14 @@ window.countNRooksSolutions = function(n) {
         console.log('rowIndex', rowIndex, 'columnIndex', columnIndex);
         board.togglePiece(rowIndex, columnIndex);
 
-        let test = board.hasAnyColConflicts();
-        console.log('test', test);
+        // let test = board.hasAnyColConflicts();
+        // console.log('test', test);
 
-        let test2 = board.hasAnyRowConflicts();
-        console.log('test2', test2);
+        // let test2 = board.hasAnyRowConflicts();
+        // console.log('test2', test2);
 
         // check for conflicts
         if (board.hasAnyRowConflicts()) { // if row conflict remove piece
-          console.log('has row conflict!');
           board.togglePiece(rowIndex, colIndex);
           continue;
         }
