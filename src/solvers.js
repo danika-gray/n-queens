@@ -31,7 +31,7 @@ window.findNRooksSolution = function(n) {
   }
 
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
-  console.log(solution);
+  //console.log(solution);
   return solution;
 };
 
@@ -42,54 +42,69 @@ window.findNRooksSolution = function(n) {
 //  [0, 0, 1]]
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
+
+// every row can be a recursive call
+// we need a base case inside the recursive function
+// if we found a solution aka row n we need to backtrack up the tree and recurse again
+// we go through rows with recursion, we go through columns with for loops
+// if we reach a base case
+
 window.countNRooksSolutions = function(n) {
+  if (n === 0) {
+    return 1;
+  }
   let solutionsCount = 0;
   let board = new Board({n: n});
 
-  // every row can be a recursive call
-  // we need a base case inside the recursive function
-  // if we found a solution aka row n we need to backtrack up the tree and recurse again
-  // we go through rows with recursion, we go through columns with for loops
-  // if we reach a base case
+  let findSolutions = function(board, rowNumber) {
+    debugger;
+    console.log(rowNumber);
+    // get row of rowNumber, eg 0 at first
+    let row = board.get(rowNumber);
+    var columnIndex = 0;
 
-  let matrix = board.rows();
-  // each row is matrix[row][for-loop index]
-  var findSolutions = function(board, row) {
-    for (let i = 0; i < matrix[row].length; i++) {
-      board.togglePiece(row, i);
+    while (columnIndex < row.length) {
+      //for (let i = 0; i < row.length; i++) {
+      board.togglePiece(rowNumber, columnIndex); // i=0 at first
 
       //check conflicts
       if (board.hasAnyRooksConflicts()) {
-        board.toggle(row, i);
+        board.togglePiece(rowNumber, columnIndex); // toggle piece off board
+        columnIndex++; // return to while condition
+        continue;
       }
 
-      if (row !== n) {
-        return findSolutions(board, row + 1);
-      } else {
+      // else no conflicts check rowNumber vs n
+      let nextRow = rowNumber + 1;
+      if (nextRow !== n) {
+        return findSolutions(board, rowNumber + 1); // start at rowNumber = 1 --> board.get(1);
+        //board.togglePiece(rowNumber, i);
+        columnIndex++;
+
+      } else if (nextRow === n) { // root of the decision tree!
         solutionsCount++;
-        board.toggle(row, i);
-        findSolutions(board, row - 1);
+        board.togglePiece(rowNumber, columnIndex); // remove the piece, go back to previous row eg rowNumber = 3
+        //return findSolutions(board, rowNumber - 1);
+        columnIndex++;
       }
-
     }
-  // check conflicts // false
-  // toggle piece on board // 1st piece
-  // recurse call with row + 1 - return findSolutions(row+1)
-
-  // check conflicts // true
-  // check column index
-  // toggle piece off the board
-
-  // base case: if rows = n
-    // increase solutionsCount
-    // toggle piece off the board
-    // return out of function
-
   };
-
   findSolutions(board, 0);
   return solutionsCount;
 };
+
+// check conflicts // false
+// toggle piece on board // 1st piece
+// recurse call with row + 1 - return findSolutions(row+1)
+
+// check conflicts // true
+// check column index
+// toggle piece off the board
+
+// base case: if rows = n
+// increase solutionsCount
+// toggle piece off the board
+// return out of function
 
 // window.countNRooksSolutions = function(n) {
 //   if (n === 0) {
