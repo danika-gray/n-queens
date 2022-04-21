@@ -94,17 +94,20 @@
 
     // test if any rows on this board contain conflicts
     hasAnyRowConflicts: function() {
+      console.log('row conflicts function acts on:', this);
       var rows = this.rows();
+      console.log(rows);
       var hasConflict = false;
 
       for (let i = 0; i < rows.length; i++) {
         let row = rows[i];
         let hasConflict = this.hasRowConflictAt(row); // boolean value
+        console.log(hasConflict);
         if (hasConflict) {
-          return true;
+          hasConflict = true;
         }
       }
-      return false;
+      return hasConflict;
     },
 
     // hasAnyRowConflicts: function() {
@@ -154,6 +157,7 @@
 
     // test if any columns on this board contain conflicts
     hasAnyColConflicts: function() {
+      console.log('column conflicts function acts on:', this);
       let rows = this.rows();
       let numColumns = rows.length;
 

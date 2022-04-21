@@ -51,7 +51,6 @@ window.countNRooksSolutions = function(n) {
         // place a piece for each new position
         console.log('rowIndex', rowIndex, 'columnIndex', columnIndex);
         board.togglePiece(rowIndex, columnIndex);
-        console.log('board after added piece', board);
 
         let test = board.hasAnyColConflicts();
         console.log('test', test);
