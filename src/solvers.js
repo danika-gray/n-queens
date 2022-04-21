@@ -1,8 +1,8 @@
 /*           _
-   ___  ___ | |_   _____ _ __ ___
-  / __|/ _ \| \ \ / / _ \ '__/ __|
-  \__ \ (_) | |\ V /  __/ |  \__ \
-  |___/\___/|_| \_/ \___|_|  |___/
+___  ___ | |_   _____ _ __ ___
+/ __|/ _ \| \ \ / / _ \ '__/ __|
+\__ \ (_) | |\ V /  __/ |  \__ \
+|___/\___/|_| \_/ \___|_|  |___/
 
 */
 
@@ -13,12 +13,25 @@
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n rooks placed such that none of them can attack each other
 
-
-
 window.findNRooksSolution = function(n) {
-  var solution = undefined; //fixme
+  //create a new board
+  var board = new Board({n: n});
+  // board.rows() = matrix
+  var solution = board.rows(); //fixme
+
+  for (var rowIndex = 0; rowIndex < solution.length; rowIndex++) {
+    var row = solution[rowIndex];
+    for (var colIndex = 0; colIndex < row.length; colIndex++) {
+      board.togglePiece(rowIndex, colIndex);
+
+      if (board.hasAnyRooksConflicts()) {
+        board.togglePiece(rowIndex, colIndex);
+      }
+    }
+  }
 
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
+  console.log(solution);
   return solution;
 };
 
@@ -30,64 +43,146 @@ window.findNRooksSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  if (n === 0) {
-    return 0;
-  }
-  let movesCount = 0;
   let solutionsCount = 0;
   let board = new Board({n: n});
 
-  let findSolutions = function(board) {
-    let piecesOnBoard = 0; // increase each time a new piece is played
+  // every row can be a recursive call
+  // we need a base case inside the recursive function
+  // if we found a solution aka row n we need to backtrack up the tree and recurse again
+  // we go through rows with recursion, we go through columns with for loops
+  // if we reach a base case
 
-    // generate row possiblities
-    for (let i = 0; i < n; i++) { // for n=2 i will be 2 aka 2 rows
-      let rowIndex = i;
+  let matrix = board.rows();
+  // each row is matrix[row][for-loop index]
+  var findSolutions = function(board, row) {
+    for (let i = 0; i < matrix[row].length; i++) {
+      board.togglePiece(row, i);
 
-      // generate column possibilities
-      for (let i = 0; i < n; i++) { // for n=2 i will be 2 aka 2 columns
-        let columnIndex = i;
+      //check conflicts
+      if (board.hasAnyRooksConflicts()) {
+        board.toggle(row, i);
+      }
 
-        // place a piece for each new position
-        console.log('rowIndex', rowIndex, 'columnIndex', columnIndex);
-        board.togglePiece(rowIndex, columnIndex);
-
-        // let test = board.hasAnyColConflicts();
-        // console.log('test', test);
-
-        // let test2 = board.hasAnyRowConflicts();
-        // console.log('test2', test2);
-
-        // check for conflicts
-        if (board.hasAnyRowConflicts()) { // if row conflict remove piece
-          board.togglePiece(rowIndex, colIndex);
-          continue;
-        }
-        if (board.hasAnyColConflicts()) { // if column conflict remove piece
-          board.togglePiece(rowIndex, colIndex);
-          continue;
-        }
-        // if there are no conflicts
-        movesCount++;
-        // if n = movesCount
-        if (n === movesCount) {
-          console.log('here2');
-          solutionsCount++;
-          return;
-        } else {
-          console.log('n not equal to movesCount', board);
-          findSolutions(board);
-        }
-
+      if (row !== n) {
+        return findSolutions(board, row + 1);
+      } else {
+        solutionsCount++;
+        board.toggle(row, i);
+        findSolutions(board, row - 1);
       }
 
     }
-  };
-  findSolutions(board);
+  // check conflicts // false
+  // toggle piece on board // 1st piece
+  // recurse call with row + 1 - return findSolutions(row+1)
 
-  console.log('Number of solutions for ' + n + ' rooks:', solutionsCount);
+  // check conflicts // true
+  // check column index
+  // toggle piece off the board
+
+  // base case: if rows = n
+    // increase solutionsCount
+    // toggle piece off the board
+    // return out of function
+
+  };
+
+  findSolutions(board, 0);
   return solutionsCount;
 };
+
+// window.countNRooksSolutions = function(n) {
+//   if (n === 0) {
+//     return 1;
+//   }
+//   let solutionsCount = 0;
+//   let board = new Board({n: n});
+//   let matrix = board.rows();
+
+//   let occupiedRows = [];
+//   console.log('occupiedRows', occupidedRows);
+//   let occupidedColumns = [];
+
+//   let findSolutions = function(board, row) {
+//     let piecesOnBoard = 0;
+
+//     // every row can be a recursive call
+//     // we need a base case inside the recursive function
+//     // if we found a solution aka row n we need to backtrack up the tree and recurse again
+//     // we go through rows with recursion, we go through columns with for loops
+
+
+//     for (let i = 0; i < matrix.length; i++) { // for n=2 i will be 2 aka 2 rows
+//       let rowIndex = matrix[i]; // current row or array
+//       if (occupiedRows.indexOf(i) > -1) { // then row is occupied, avoid it!
+//         continue;
+//       }
+
+//       for (let j = 0; j < rowIndex.length; j++) { // for n=2 i will be 2 aka 2 columns
+//         if (occupidedColumns.indexOf(j) > -1) { // then column is occupied, avoid it!
+//           continue;
+//         }
+
+//         occupidedRows.push(i);
+//         occupidedColumns.push(j);
+
+//         board.togglePiece(i, j);
+//         piecesOnBoard++;
+
+//         if (n === piecesOnBoard) {
+//           // if we reach a base case
+//           // pieces on Board needs to be changed
+//           solutionsCount++;
+//           occupiedRows = [];
+//           occupidedColumns = [];
+//           // remove
+//           return;
+
+//         } else {
+//           let nextRow = row+1;
+//           findSolutions(board, row +1); // return from inner functions
+//           // piece
+
+//         }
+//       }
+//     }
+//   };
+//   findSolutions(board, 0);
+
+//   console.log('Number of solutions for ' + n + ' rooks:', solutionsCount);
+//   return solutionsCount;
+// };
+
+// window.findNRooksSolution = function(n) {
+//   //create a new board
+//   var board = new Board({n: n});
+//   // board.rows() = matrix
+//   var solution = board.rows(); //fixme
+
+//   for (var rowIndex = 0; rowIndex < solution.length; rowIndex++) {
+//     var row = solution[rowIndex];
+//     for (var colIndex = 0; colIndex < row.length; colIndex++) {
+//       board.togglePiece(rowIndex, colIndex);
+
+//       if (board.hasAnyRooksConflicts()) {
+//         board.togglePiece(rowIndex, colIndex);
+//       }
+//     }
+//   }
+
+//   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
+//   console.log(solution);
+//   return solution;
+// };
+
+// var solutionBoard = new Board(findNRooksSolution(n));
+// findNRooksSolution(n) generates one matrix of dimensions n x n
+// [[1, 0, 0],
+//  [0, 1, 0],
+//  [0, 0, 1]]
+
+// return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
+
 
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
