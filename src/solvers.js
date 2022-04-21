@@ -57,20 +57,15 @@ window.countNRooksSolutions = function(n) {
   let board = new Board({n: n});
 
   let findSolutions = function(board, rowNumber) {
-    debugger;
-    console.log(rowNumber);
-    // get row of rowNumber, eg 0 at first
     let row = board.get(rowNumber);
-    var columnIndex = 0;
 
-    while (columnIndex < row.length) {
-      //for (let i = 0; i < row.length; i++) {
-      board.togglePiece(rowNumber, columnIndex); // i=0 at first
+    for (let i = 0; i < row.length; i++) {
+      board.togglePiece(rowNumber, i); // i=0 at first
 
-      //check conflicts
+      //check conflict
       if (board.hasAnyRooksConflicts()) {
-        board.togglePiece(rowNumber, columnIndex); // toggle piece off board
-        columnIndex++; // return to while condition
+        board.togglePiece(rowNumber, i); // toggle piece off board
+        i++; // return to while condition
         continue;
       }
 
@@ -79,13 +74,13 @@ window.countNRooksSolutions = function(n) {
       if (nextRow !== n) {
         return findSolutions(board, rowNumber + 1); // start at rowNumber = 1 --> board.get(1);
         //board.togglePiece(rowNumber, i);
-        columnIndex++;
+        i++;
 
       } else if (nextRow === n) { // root of the decision tree!
         solutionsCount++;
-        board.togglePiece(rowNumber, columnIndex); // remove the piece, go back to previous row eg rowNumber = 3
+        board.togglePiece(rowNumber, i); // remove the piece, go back to previous row eg rowNumber = 3
         //return findSolutions(board, rowNumber - 1);
-        columnIndex++;
+        i++;
       }
     }
   };
