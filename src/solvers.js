@@ -22,87 +22,157 @@ window.findNRooksSolution = function(n) {
   return solution;
 };
 
+// var solutionBoard = new Board(findNRooksSolution(n));
+// findNRooksSolution(n) generates one matrix of dimensions n x n
+// [[1, 0, 0],
+//  [0, 1, 0],
+//  [0, 0, 1]]
+
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
   if (n === 0) {
     return 0;
   }
-  var movesCount = 0;
-  var solutionsCount = 0;
-  //var movesCount = 0;
-  //create new board of n size
-  var board = new Board({n: n}); // [0]
-  // [1, 0, 0 0 0 0 0 0 0]
-  // [0, 1, 0]
-  // [0, 0, 1]
+  let movesCount = 0;
+  let solutionsCount = 0;
+  let board = new Board({n: n});
 
-  var test = board.hasAnyColConflicts();
-  console.log(test);
+  let findSolutions = function(board) {
+    let piecesOnBoard = 0; // increase each time a new piece is played
 
-  // [[0, 0],
-  // [0, 0]]
+    // generate row possiblities
+    for (let i = 0; i < n; i++) { // for n=2 i will be 2 aka 2 rows
+      let rowIndex = i;
 
-  // [[1, 0],   // save this index? [00, 10, 01, 11]
-  // [0, 0]]
+      // generate column possibilities
+      for (let i = 0; i < n; i++) { // for n=2 i will be 2 aka 2 columns
+        let columnIndex = i;
 
-  // [[1, 0],
-  // [0, 1]]
+        // place a piece for each new position
+        console.log('rowIndex', rowIndex, 'columnIndex', columnIndex);
+        board.togglePiece(rowIndex, columnIndex);
+        console.log('board after added piece', board);
 
-  // [[0, 0],
-  // [0, 0]]
+        let test = board.hasAnyColConflicts();
+        console.log('test', test);
 
-  // [[0, 1],
-  // [0, 0]]
+        let test2 = board.hasAnyRowConflicts();
+        console.log('test2', test2);
 
-  var findSolution = function(board) {
-    // iterate through all possible moves
-
-    var rows = board.rows();
-    console.log('rows', rows);
-
-    for (let i = 0; i < rows.length; i++) { // row = 0
-      let rowIndex = i; // index for each row?
-      console.log('rowIndex', rowIndex);
-      let row = rows[i];
-
-      for (let i = 0; i < row.length; i++) { //00  // 01
-
-        let colIndex = row[i]; // row[i][i] row[0][0] [1][1]
-        console.log('colIndex', colIndex);
-
-        board.togglePiece(rowIndex, colIndex); // place piece on board
-
-        if (board.hasAnyRooksConflicts()) {
-          board.togglePiece(rowIndex, colIndex); // remove piece
+        // check for conflicts
+        if (board.hasAnyRowConflicts()) { // if row conflict remove piece
+          console.log('has row conflict!');
+          board.togglePiece(rowIndex, colIndex);
           continue;
         }
-        if (board.hasAnyColConflicts()) {
-          board.togglePiece(rowIndex, colIndex); // remove piece
+        if (board.hasAnyColConflicts()) { // if column conflict remove piece
+          board.togglePiece(rowIndex, colIndex);
           continue;
         }
-        // only keep piece on board if there are no conflicts
-        movesCount++; // 1
-        if (movesCount < n) {
-          console.log('movesCount', movesCount);
-          //return findSolution(board); // next move
-        }
-        if (movesCount === n) {
-          console.log('board', board);
+        // if there are no conflicts
+        movesCount++;
+        // if n = movesCount
+        if (n === movesCount) {
+          console.log('here2');
           solutionsCount++;
-          // return to the top of for loop
+          return;
+        } else {
+          console.log('n not equal to movesCount', board);
+          findSolutions(board);
         }
 
       }
 
     }
-
   };
-  // call findSolution();
-  findSolution(board);
+  findSolutions(board);
 
   console.log('Number of solutions for ' + n + ' rooks:', solutionsCount);
   return solutionsCount;
 };
+
+
+// return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
+// window.countNRooksSolutions = function(n) {
+//   if (n === 0) {
+//     return 0;
+//   }
+//   var movesCount = 0;
+//   var solutionsCount = 0;
+//   //var movesCount = 0;
+//   //create new board of n size
+//   var board = new Board({n: n}); // [0]
+//   // [1, 0, 0 0 0 0 0 0 0]
+//   // [0, 1, 0]
+//   // [0, 0, 1]
+
+//   var test = board.hasAnyColConflicts();
+//   //console.log(test);
+
+//   // [[0, 0],
+//   // [0, 0]]
+
+//   // [[1, 0],   // save this index? [00, 10, 01, 11]
+//   // [0, 0]]
+
+//   // [[1, 0],
+//   // [0, 1]]
+
+//   // [[0, 0],
+//   // [0, 0]]
+
+//   // [[0, 1],
+//   // [0, 0]]
+
+//   var findSolution = function(board) {
+//     // iterate through all possible moves
+
+//     var rows = board.rows();
+//     //console.log('rows', rows);
+
+//     for (let i = 0; i < rows.length; i++) { // row = 0
+//       let rowIndex = i; // index for each row?
+//       //console.log('rowIndex', rowIndex);
+//       let row = rows[i];
+
+//       for (let i = 0; i < row.length; i++) { //00  // 01
+
+//         let colIndex = row[i]; // row[i][i] row[0][0] [1][1]
+//         //console.log('colIndex', colIndex);
+
+//         board.togglePiece(rowIndex, colIndex); // place piece on board
+
+//         if (board.hasAnyRooksConflicts()) {
+//           board.togglePiece(rowIndex, colIndex); // remove piece
+//           continue;
+//         }
+//         if (board.hasAnyColConflicts()) {
+//           board.togglePiece(rowIndex, colIndex); // remove piece
+//           continue;
+//         }
+//         // only keep piece on board if there are no conflicts
+//         movesCount++; // 1
+//         if (movesCount < n) {
+//           //console.log('movesCount', movesCount);
+//           //return findSolution(board); // next move
+//         }
+//         if (movesCount === n) {
+//           // console.log('board', board);
+//           solutionsCount++;
+//           // return to the top of for loop
+//         }
+
+//       }
+
+//     }
+
+//   };
+//   // call findSolution();
+//   findSolution(board);
+
+//   console.log('Number of solutions for ' + n + ' rooks:', solutionsCount);
+//   return solutionsCount;
+// };
 
 
 

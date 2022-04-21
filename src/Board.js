@@ -161,7 +161,6 @@
         var column = i;
 
         let hasConflict = this.hasColConflictAt(column);
-        console.log(hasConflict);
         if (hasConflict) {
           return true;
         }
