@@ -78,9 +78,7 @@
     // --------------------------------------------------------------
     //
     // test if a specific row on this board contains a conflict
-    hasRowConflictAt: function(rowIndex) {
-      var rows = this.rows(); // get matrix
-      var row = rows[rowIndex]; // row at given index
+    hasRowConflictAt: function(row) { // renamed rowIndex to row to minimize confusion
       var pieceCount = 0;
 
       for (let i = 0; i < row.length; i++) {
@@ -91,7 +89,6 @@
           return true;
         }
       }
-
       return false;
     },
 
@@ -100,19 +97,33 @@
       var rows = this.rows();
       var hasConflict = false;
 
-      rows.forEach(function(row) {
-        var pieceCount = 0;
-        for (let i = 0; i < row.length; i++) {
-          if (row[i] === 1) {
-            pieceCount += 1;
-          }
-          if (pieceCount >= 2) {
-            hasConflict = true;
-          }
+      for (let i = 0; i < rows.length; i++) {
+        let row = rows[i];
+        let hasConflict = this.hasRowConflictAt(row); // boolean value
+        if (hasConflict) {
+          return true;
         }
-      });
-      return hasConflict;
+      }
+      return false;
     },
+
+    // hasAnyRowConflicts: function() {
+    //   var rows = this.rows();
+    //   var hasConflict = false;
+
+    //   rows.forEach(function(row) {
+    //     var pieceCount = 0;
+    //     for (let i = 0; i < row.length; i++) {
+    //       if (row[i] === 1) {
+    //         pieceCount += 1;
+    //       }
+    //       if (pieceCount >= 2) {
+    //         hasConflict = true;
+    //       }
+    //     }
+    //   });
+    //   return hasConflict;
+    // },
 //[
 // [0, 0, 0],    0  row[0][0, 1, 2]
 // [0, 0, 0],    1  row[1][0, 1, 2]
@@ -124,13 +135,14 @@
     // COLUMNS - run from top to bottom
     // --------------------------------------------------------------
     //
-    // test if a specific column on this board contains a conflict
-    hasColConflictAt: function(colIndex) {
-      var rows = this.rows();
-      var pieceCount = 0;
+    // test if ONE specific column on this board contains a conflict
+    hasColConflictAt: function(colIndex) { // colIndex is a number
+      let rows = this.rows();
+      let pieceCount = 0;
 
       for (let i = 0; i < rows.length; i++) {
-        if (rows[i][colIndex] === 1) {
+        let row = rows[i]; // each row
+        if (row[colIndex] === 1) {
           pieceCount += 1;
         }
         if (pieceCount >= 2) {
@@ -140,40 +152,72 @@
       return false;
     },
 
+    // test if any columns on this board contain conflicts
+    hasAnyColConflicts: function() {
+      let rows = this.rows();
+      let numColumns = rows.length;
+
+      for (let i = 0; i < numColumns; i++) {
+        var column = i;
+
+        let hasConflict = this.hasColConflictAt(column);
+        console.log(hasConflict);
+        if (hasConflict) {
+          return true;
+        }
+      }
+      return false;
+    },
+
+    // hasAnyRowConflicts: function() {
+    //   var rows = this.rows();
+    //   var hasConflict = false;
+
+    //   for (let i = 0; i < rows.length; i++) {
+    //     let row = rows[i];
+    //     let hasConflict = this.hasRowConflictAt(row); // boolean value
+    //     if (hasConflict) {
+    //       return true;
+    //     }
+    //   }
+    //   return false;
+    // },
+
     // var matrix = [
     //   [0, 1, 0, 0],
     //   [0, 0, 1, 0],
     //   [0, 0, 0, 0],
     //   [0, 0, 0, 0]
     // ];
-    hasAnyColConflicts: function() {
-      var rows = this.rows();
-      var hasConflict = false;
-      var columnIndex;
+    // hasAnyColConflicts: function() {
+    //   var rows = this.rows();
+    //   var hasConflict = false;
+    //   var columnIndex;
 
-      rows.forEach(function(row) {
-        var pieceCount = 0;
-        if (row.indexOf(1) > -1) { // first time we find 1 in a row
-          columnIndex = row.indexOf(1); // check all rows at this index
+    //   rows.forEach(function(row) {
+    //     var pieceCount = 0;
+    //     if (row.indexOf(1) > -1) { // first time we find 1 in a row
+    //       columnIndex = row.indexOf(1); // check all rows at this index
 
-          let hasColConflictAt = function(colIndex) {
+    //       let hasColConflictAt = function(colIndex) {
+    //         console.log(colIndex, 'here');
 
-            for (let i = 0; i < rows.length; i++) { // iterate through each row
-              if (rows[i][colIndex] === 1) { // check if there is a 1 at columnIndex for each row
-                pieceCount += 1; // if so, increase pieceCount
-              }
-              if (pieceCount >= 2) {
-                hasConflict = true;
-              }
-            }
-          };
+    //         for (let i = 0; i < rows.length; i++) { // iterate through each row
+    //           if (rows[i][colIndex] === 1) { // check if there is a 1 at columnIndex for each row
+    //             pieceCount += 1; // if so, increase pieceCount
+    //           }
+    //           if (pieceCount >= 2) {
+    //             hasConflict = true;
+    //           }
+    //         }
+    //       };
 
-          hasColConflictAt(columnIndex);
-        }
-      });
+    //       hasColConflictAt(columnIndex);
+    //     }
+    //   });
 
-      return hasConflict;
-    },
+    //   return hasConflict;
+    // },
 
 
 
