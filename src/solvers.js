@@ -53,40 +53,37 @@ window.countNRooksSolutions = function(n) {
   if (n === 0) {
     return 1;
   }
-  let solutionsCount = 0;
-  let board = new Board({n: n});
+  let solutionCount = 0;
+  let board = new Board({n: n}); // [0]
 
-  let findSolutions = function(board, rowNumber) {
-    let row = board.get(rowNumber);
+  // [0, 0]  // solution +1 findsolution (board, row - 1)
+  // [0, 0]  row = 1  row + 1 > n  = findsolution(board, row - 1 = 0)
+  // row + 1 solution = 3---
 
-    for (let i = 0; i < row.length; i++) {
-      board.togglePiece(rowNumber, i); // i=0 at first
+  let findSolutions = function(rowNumber) { //[1, 0] [0, 1]   /findSolutions(rowNumber)
+    //console.log(board);
 
+    if (rowNumber === n) { //2
+      solutionCount++; //solution count = 2
+      return;
+    }
+
+    for (let i = 0; i < n; i++) {
+      // console.log('inside for loop', i);
+      board.togglePiece(rowNumber, i); // i=0 at first  [1]
+      // console.log('matrix', board.rows());
       //check conflict
-      if (board.hasAnyRooksConflicts()) {
-        board.togglePiece(rowNumber, i); // toggle piece off board
-        i++; // return to while condition
-        continue;
+      if (!board.hasAnyRooksConflicts()) {
+        //recurse findSolutions(rowNumber + 1)
+        findSolutions(rowNumber + 1); //1
       }
-
-      // else no conflicts check rowNumber vs n
-      let nextRow = rowNumber + 1;
-      if (nextRow !== n) {
-        return findSolutions(board, rowNumber + 1); // start at rowNumber = 1 --> board.get(1);
-        //board.togglePiece(rowNumber, i);
-        i++;
-
-      } else if (nextRow === n) { // root of the decision tree!
-        solutionsCount++;
-        board.togglePiece(rowNumber, i); // remove the piece, go back to previous row eg rowNumber = 3
-        //return findSolutions(board, rowNumber - 1);
-        i++;
-      }
+      board.togglePiece(rowNumber, i); // toggle piece off board
     }
   };
-  findSolutions(board, 0);
-  return solutionsCount;
+  findSolutions(0);
+  return solutionCount;
 };
+
 
 // check conflicts // false
 // toggle piece on board // 1st piece
